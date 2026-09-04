@@ -1,16 +1,15 @@
-
-# Engine1 v0.5 Professional Backtester
+# Engine1 v1.5 Professional Backtest Engine
 
 Features:
-- ATR based stop loss / take profit
-- Risk reward filter
-- Exit reason tracking
-- Market regime filter
-- Trade report
-- Performance metrics
+- Multi year data downloader framework
+- MTF strategy structure
+- LONG / SHORT support
+- Real capital simulation
+- Fees and slippage
+- Equity curve
+- Drawdown
+- Performance report
 
 Run:
-
 pip install -r requirements.txt
-
 python3 -m streamlit run app.py

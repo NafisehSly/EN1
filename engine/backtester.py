@@ -1,29 +1,15 @@
 import pandas as pd
 import ta
 
-def run_backtest(df, capital, risk, fee, slippage):
+def run_backtest(df, capital, risk, fee):
 
     x=df.copy()
-
-    x["ema20"]=ta.trend.EMAIndicator(
-        x.close,20
-    ).ema_indicator()
-
-    x["ema200"]=ta.trend.EMAIndicator(
-        x.close,200
-    ).ema_indicator()
-
-    x["rsi"]=ta.momentum.RSIIndicator(
-        x.close
-    ).rsi()
-
-    x["adx"]=ta.trend.ADXIndicator(
-        x.high,x.low,x.close
-    ).adx()
-
-    x["atr"]=ta.volatility.AverageTrueRange(
-        x.high,x.low,x.close
-    ).average_true_range()
+    x["ema20"]=ta.trend.EMAIndicator(x.close,20).ema_indicator()
+    x["ema200"]=ta.trend.EMAIndicator(x.close,200).ema_indicator()
+    x["rsi"]=ta.momentum.RSIIndicator(x.close).rsi()
+    x["adx"]=ta.trend.ADXIndicator(x.high,x.low,x.close).adx()
+    x["atr"]=ta.volatility.AverageTrueRange(x.high,x.low,x.close).average_true_range()
+    x["vol_ma"]=x.volume.rolling(20).mean()
 
     balance=capital
     trades=[]
@@ -32,47 +18,33 @@ def run_backtest(df, capital, risk, fee, slippage):
     position=None
 
     for i in range(200,len(x)):
-
         r=x.iloc[i]
 
         if position is None:
-
-            if (
-                r.close > r.ema20
-                and r.rsi > 50
-                and r.adx > 30
-            ):
-
+            if r.close>r.ema20 and r.rsi>50 and r.adx>30 and r.volume>r.vol_ma:
                 risk_money=balance*risk/100
-                stop=r.close-r.atr*1.5
-
-                size=risk_money/(r.close-stop)
+                size=risk_money/(r.atr*1.5)
 
                 position={
                     "entry":r.close,
-                    "stop":stop,
+                    "stop":r.close-r.atr*1.5,
                     "target":r.close+r.atr*3,
                     "size":size
                 }
 
-
         else:
-
             exit_price=None
 
-            if r.low <= position["stop"]:
+            if r.low<=position["stop"]:
                 exit_price=position["stop"]
 
-            elif r.high >= position["target"]:
+            elif r.high>=position["target"]:
                 exit_price=position["target"]
 
             if exit_price:
-
                 pnl=(exit_price-position["entry"])*position["size"]
-
-                pnl -= abs(pnl)*(fee+slippage)/100
-
-                balance += pnl
+                pnl-=abs(pnl)*fee/100
+                balance+=pnl
 
                 trades.append({
                     "entry":position["entry"],
@@ -83,10 +55,7 @@ def run_backtest(df, capital, risk, fee, slippage):
 
                 position=None
 
-        equity.append({
-            "time":r.time,
-            "balance":balance
-        })
+        equity.append({"index":i,"balance":balance})
 
     t=pd.DataFrame(trades)
 
