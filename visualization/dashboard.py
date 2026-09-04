@@ -1,48 +1,30 @@
 
-import plotly.graph_objects as go
 import streamlit as st
+import plotly.graph_objects as go
+import pandas as pd
 
-def render_dashboard(df, result):
+def show_report(df,r):
 
-    c1,c2,c3,c4 = st.columns(4)
+    a,b,c=st.columns(3)
 
-    c1.metric("PRICE", result["price"])
-    c2.metric("SIGNAL", result["signal"])
-    c3.metric("TREND", result["trend"])
-    c4.metric("CONFIDENCE", str(result["confidence"])+"%")
+    a.metric("Trades",r["count"])
+    b.metric("Win Rate",str(r["win_rate"])+"%")
+    c.metric("Profit",str(r["profit"]))
 
-    st.subheader("ENGINE FLOW")
+    st.subheader("Trade Report")
 
-    st.code(
-f'''
-DATA FEED
-   |
-   OK ✓
-   |
-MARKET ANALYSIS
-   |
-   OK ✓
-   |
-SIGNAL ENGINE
-   |
-   {result["signal"]}
-'''
-    )
+    st.dataframe(pd.DataFrame(r["trades"]))
 
-    fig = go.Figure()
+    fig=go.Figure()
 
     fig.add_trace(go.Candlestick(
-        x=df["time"],
-        open=df["open"],
-        high=df["high"],
-        low=df["low"],
-        close=df["close"],
-        name="BTC"
+        x=df.time,
+        open=df.open,
+        high=df.high,
+        low=df.low,
+        close=df.close
     ))
 
-    fig.update_layout(
-        height=650,
-        title="BTCUSDT LIVE ENGINE1 CHART"
-    )
+    fig.update_layout(height=650)
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig,use_container_width=True)

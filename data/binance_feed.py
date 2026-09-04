@@ -2,22 +2,18 @@
 import requests
 import pandas as pd
 
-def get_market_data(symbol="BTCUSDT", interval="5m", limit=300):
+def get_historical_data(symbol="BTCUSDT", interval="1h", limit=1000):
 
-    url = "https://api.binance.com/api/v3/klines"
-
-    response = requests.get(
-        url,
+    data = requests.get(
+        "https://api.binance.com/api/v3/klines",
         params={
             "symbol": symbol,
             "interval": interval,
             "limit": limit
         }
-    )
+    ).json()
 
-    raw = response.json()
-
-    df = pd.DataFrame(raw, columns=[
+    df = pd.DataFrame(data, columns=[
         "time","open","high","low","close",
         "volume","close_time","qav",
         "trades","tbv","tqv","ignore"

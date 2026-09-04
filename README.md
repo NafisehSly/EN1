@@ -1,18 +1,16 @@
 
-# Engine1 v0.1 Full System
+# Engine1 v0.5 Professional Backtester
 
-A complete starter architecture for Engine1:
-- Live BTCUSDT data feed
-- Market analysis engine
-- Signal generation
-- Risk calculation
-- Visual dashboard
+Features:
+- ATR based stop loss / take profit
+- Risk reward filter
+- Exit reason tracking
+- Market regime filter
+- Trade report
+- Performance metrics
 
-## Install
+Run:
 
 pip install -r requirements.txt
 
-## Run
-
-streamlit run app.py
-
+python3 -m streamlit run app.py

@@ -1,18 +1,15 @@
 
 import streamlit as st
-from data.binance_feed import get_market_data
-from engine.analysis import run_engine
-from visualization.dashboard import render_dashboard
+from data.binance_feed import get_historical_data
+from engine.backtest import run_backtest
+from visualization.dashboard import show_report
 
-st.set_page_config(
-    page_title="Engine1 AI Trading System",
-    layout="wide"
-)
+st.set_page_config(layout="wide")
 
-st.title("ENGINE 1 - LIVE BTC INTELLIGENCE")
+st.title("ENGINE 1 v0.5 - PROFESSIONAL BACKTEST")
 
-df = get_market_data()
+df = get_historical_data()
 
-result = run_engine(df)
+report = run_backtest(df)
 
-render_dashboard(df, result)
+show_report(df, report)
